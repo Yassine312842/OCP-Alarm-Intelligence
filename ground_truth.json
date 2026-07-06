@@ -1,0 +1,116 @@
+[
+  {
+    "incident_id": "INC-001",
+    "scenario": "FEED_IMBALANCE",
+    "root_cause": "NH3/acid ratio controller drift",
+    "t0": "2025-01-02T02:52:00"
+  },
+  {
+    "incident_id": "INC-004",
+    "scenario": "GRANULATOR_OVERLOAD",
+    "root_cause": "Wet product recycle buildup",
+    "t0": "2025-01-02T08:10:00"
+  },
+  {
+    "incident_id": "INC-010",
+    "scenario": "FEED_IMBALANCE",
+    "root_cause": "NH3/acid ratio controller drift",
+    "t0": "2025-01-02T08:46:00"
+  },
+  {
+    "incident_id": "INC-006",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-02T23:26:00"
+  },
+  {
+    "incident_id": "INC-011",
+    "scenario": "GRANULATOR_OVERLOAD",
+    "root_cause": "Wet product recycle buildup",
+    "t0": "2025-01-03T20:06:00"
+  },
+  {
+    "incident_id": "INC-018",
+    "scenario": "FEED_IMBALANCE",
+    "root_cause": "NH3/acid ratio controller drift",
+    "t0": "2025-01-04T07:16:00"
+  },
+  {
+    "incident_id": "INC-000",
+    "scenario": "FEED_IMBALANCE",
+    "root_cause": "NH3/acid ratio controller drift",
+    "t0": "2025-01-04T10:53:00"
+  },
+  {
+    "incident_id": "INC-005",
+    "scenario": "GRANULATOR_OVERLOAD",
+    "root_cause": "Wet product recycle buildup",
+    "t0": "2025-01-05T21:45:00"
+  },
+  {
+    "incident_id": "INC-015",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-06T01:14:00"
+  },
+  {
+    "incident_id": "INC-008",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-06T11:56:00"
+  },
+  {
+    "incident_id": "INC-017",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-07T14:39:00"
+  },
+  {
+    "incident_id": "INC-003",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-09T08:12:00"
+  },
+  {
+    "incident_id": "INC-014",
+    "scenario": "GRANULATOR_OVERLOAD",
+    "root_cause": "Wet product recycle buildup",
+    "t0": "2025-01-10T01:08:00"
+  },
+  {
+    "incident_id": "INC-007",
+    "scenario": "FEED_IMBALANCE",
+    "root_cause": "NH3/acid ratio controller drift",
+    "t0": "2025-01-10T12:52:00"
+  },
+  {
+    "incident_id": "INC-002",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-13T05:09:00"
+  },
+  {
+    "incident_id": "INC-009",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-13T13:26:00"
+  },
+  {
+    "incident_id": "INC-016",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-13T16:30:00"
+  },
+  {
+    "incident_id": "INC-013",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-14T03:40:00"
+  },
+  {
+    "incident_id": "INC-012",
+    "scenario": "SCRUBBER_DEGRADATION",
+    "root_cause": "Scrubber recirc pump fouling",
+    "t0": "2025-01-14T06:53:00"
+  }
+]
