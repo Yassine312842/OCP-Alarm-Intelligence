@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OCP · Alarm Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0F1319; --panel:#161C25; --panel-2:#1C2430; --panel-3:#212B39;
+    --line:#28313E; --line-2:#38475A;
+    --text:#E6EBF2; --muted:#8695A6; --dim:#5B6979;
+    --critical:#F0524B; --critical-bg:#2A1618;
+    --high:#F2A03D;    --high-bg:#271D12;
+    --low:#7C8AA0;     --low-bg:#1B222D;
+    --ok:#34C6AB; --accent:#37C9B6;
+    --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  #root{height:100%}
+  ::selection{background:rgba(55,201,182,.28)}
+  a{color:inherit}
+  button{font-family:inherit}
+  .app{display:grid;grid-template-columns:216px 1fr;height:100vh}
+
+  /* ---- rail ---- */
+  .rail{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 0}
+  .brand{display:flex;align-items:center;gap:10px;padding:0 18px 20px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .brand .mark{width:26px;height:26px;border-radius:6px;background:linear-gradient(160deg,var(--accent),#1E8C7E);display:grid;place-items:center;flex:0 0 auto}
+  .brand .mark svg{width:15px;height:15px}
+  .brand b{font-size:13px;font-weight:600;letter-spacing:.02em;display:block;line-height:1.2}
+  .brand span{font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
+  .nav{display:flex;flex-direction:column;gap:2px;padding:6px 10px}
+  .nav button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:0;color:var(--muted);
+    padding:9px 11px;border-radius:7px;cursor:pointer;font-size:12.5px;font-weight:500;transition:background .12s,color .12s}
+  .nav button svg{width:16px;height:16px;flex:0 0 auto;opacity:.85}
+  .nav button:hover{background:var(--panel-2);color:var(--text)}
+  .nav button.on{background:var(--panel-3);color:var(--text)}
+  .nav button.on svg{color:var(--accent);opacity:1}
+  .nav .badge{margin-left:auto;font-family:var(--mono);font-size:10px;background:var(--critical);color:#fff;border-radius:20px;padding:1px 6px;font-weight:600}
+  .rail-foot{margin-top:auto;padding:14px 18px 2px;border-top:1px solid var(--line);color:var(--dim);font-size:10.5px;letter-spacing:.06em}
+
+  /* ---- main ---- */
+  .main{overflow-y:auto}
+  .topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:18px;padding:14px 26px;
+    background:rgba(15,19,25,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .topbar h1{font-size:15px;font-weight:600;margin:0;letter-spacing:.01em}
+  .topbar .sub{color:var(--muted);font-size:11.5px;font-family:var(--mono)}
+  .src{margin-left:auto;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:4px 11px}
+  .src .dot{width:7px;height:7px;border-radius:50%}
+  .src.live .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(52,198,171,.16)}
+  .src.sample .dot{background:var(--high);box-shadow:0 0 0 3px rgba(242,160,61,.16)}
+  .view{padding:24px 26px 60px;max-width:1180px}
+
+  .eyebrow{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .lead{color:var(--muted);font-size:12.5px;margin:4px 0 20px;max-width:70ch}
+
+  /* readouts */
+  .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+  .readout{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+  .readout .k{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .readout .v{font-family:var(--mono);font-size:30px;font-weight:500;line-height:1.1;margin-top:8px}
+  .readout .u{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:4px}
+  .readout.warn .v{color:var(--high)} .readout.crit .v{color:var(--critical)}
+  .readout .spark{position:absolute;right:0;bottom:0;left:0;height:3px;background:var(--line)}
+  .readout .spark i{display:block;height:100%;background:var(--accent)}
+
+  /* panels */
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:18px}
+  .panel > h3{margin:0 0 3px;font-size:14px;font-weight:600}
+  .panel > .note{color:var(--muted);font-size:11.5px;margin:0 0 16px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}.app{grid-template-columns:64px 1fr}.brand b,.brand span,.nav button span,.rail-foot{display:none}.nav button{justify-content:center}}
+
+  /* annunciator */
+  .annun{display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:10px}
+  .cell{background:var(--panel-2);border:1px solid var(--line);border-left-width:3px;border-radius:8px;padding:11px 12px;position:relative}
+  .cell .led{position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%}
+  .cell .tag{font-family:var(--mono);font-size:11.5px;color:var(--text);font-weight:500;letter-spacing:-.01em}
+  .cell .cnt{font-family:var(--mono);font-size:24px;font-weight:500;margin-top:6px;line-height:1}
+  .cell .lvl{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:5px;font-weight:600}
+  .cell.critical{border-left-color:var(--critical)} .cell.critical .led{background:var(--critical);box-shadow:0 0 8px var(--critical)}
+  .cell.critical .cnt{color:var(--critical)}
+  .cell.high{border-left-color:var(--high)} .cell.high .led{background:var(--high);box-shadow:0 0 8px var(--high)} .cell.high .cnt{color:var(--high)}
+  .cell.low{border-left-color:var(--low)} .cell.low .led{background:var(--low)}
+  @media(prefers-reduced-motion:no-preference){.cell.critical .led{animation:pulse 1.8s ease-in-out infinite}}
+  @keyframes pulse{50%{opacity:.35}}
+
+  /* priority bar */
+  .pbar{display:flex;height:12px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .pbar i{display:block} .pbar .c{background:var(--critical)} .pbar .h{background:var(--high)} .pbar .l{background:var(--low)}
+  .plegend{display:flex;gap:18px;margin-top:12px;flex-wrap:wrap}
+  .plegend span{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);font-family:var(--mono)}
+  .plegend b{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+  /* chart svg */
+  .axis{stroke:var(--line);stroke-width:1}
+  .axis-t{fill:var(--muted);font-family:var(--mono);font-size:10px}
+  .gridline{stroke:var(--line);stroke-width:1;stroke-dasharray:2 4;opacity:.6}
+
+  /* ranked rows (co-occurrence) */
+  .rows{display:flex;flex-direction:column;gap:9px}
+  .rrow{display:grid;grid-template-columns:220px 1fr 44px;align-items:center;gap:14px}
+  .rrow .pair{font-family:var(--mono);font-size:11.5px;color:var(--text)}
+  .rrow .pair em{color:var(--muted);font-style:normal}
+  .rrow .track{height:9px;background:var(--panel-2);border-radius:5px;overflow:hidden}
+  .rrow .track i{display:block;height:100%;background:linear-gradient(90deg,#2C7C74,var(--accent));border-radius:5px}
+  .rrow .n{font-family:var(--mono);font-size:12px;text-align:right;color:var(--muted)}
+  .rrow.key .track i{background:linear-gradient(90deg,#8a5a1e,var(--high))}
+  .rrow.key .pair{color:var(--high)}
+
+  /* sequences */
+  .seq{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+  .seq .head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .seq .occ{font-family:var(--mono);font-size:11px;background:var(--panel-3);border:1px solid var(--line);border-radius:20px;padding:2px 10px;color:var(--muted)}
+  .seq .occ b{color:var(--text)}
+  .seq .tip{color:var(--muted);font-size:11px;margin-left:auto;font-family:var(--mono)}
+  .chain{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+  .step{display:flex;flex-direction:column;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:7px 11px;border-top-width:2px}
+  .step .st{font-family:var(--mono);font-size:11.5px}
+  .step .sl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .step.CRITICAL{border-top-color:var(--critical)} .step.CRITICAL .sl{color:var(--critical)}
+  .step.HIGH{border-top-color:var(--high)} .step.HIGH .sl{color:var(--high)}
+  .step.LOW{border-top-color:var(--low)}
+  .arrow{color:var(--dim);font-family:var(--mono);font-size:13px;padding:0 2px}
+
+  /* root cause */
+  .rc{display:grid;grid-template-columns:300px 1fr;gap:18px}
+  @media(max-width:820px){.rc{grid-template-columns:1fr}}
+  .inc-list{display:flex;flex-direction:column;gap:8px;max-height:520px;overflow-y:auto;padding-right:4px}
+  .inc{width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-left-width:3px;border-radius:9px;
+    padding:12px 14px;cursor:pointer;transition:border-color .12s,background .12s}
+  .inc:hover{background:var(--panel-3)}
+  .inc.sel{border-color:var(--line-2);background:var(--panel-3)}
+  .inc.sel{border-left-color:var(--accent)}
+  .inc .id{font-family:var(--mono);font-size:12px;font-weight:500}
+  .inc .cause{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .inc .when{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:6px}
+  .inc.done{border-left-color:var(--ok)}
+  .detail{background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:20px}
+  .detail .dl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .detail .cause-lg{font-size:19px;font-weight:600;margin:6px 0 2px}
+  .detail .conf{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .cand{margin-top:18px}
+  .cand table{width:100%;border-collapse:collapse;font-size:12px}
+  .cand th{text-align:left;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:0 0 8px}
+  .cand td{padding:8px 0;border-top:1px solid var(--line);font-family:var(--mono);font-size:11.5px}
+  .cand .rk{color:var(--dim)} .cand .rk.one{color:var(--accent)}
+  .lvltag{font-size:9px;letter-spacing:.08em;padding:2px 6px;border-radius:4px;font-weight:600}
+  .lvltag.CRITICAL{background:var(--critical-bg);color:var(--critical)} .lvltag.HIGH{background:var(--high-bg);color:var(--high)}
+  .lvltag.LO,.lvltag.LOW{background:var(--low-bg);color:var(--low)}
+  .btn{margin-top:20px;background:var(--accent);color:#06231F;border:0;border-radius:8px;padding:10px 16px;font-weight:600;font-size:12.5px;cursor:pointer}
+  .btn:hover{filter:brightness(1.06)} .btn:disabled{background:var(--panel-3);color:var(--ok);cursor:default}
+  .btn.done{background:none;border:1px solid var(--ok);color:var(--ok)}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--panel-3);border:1px solid var(--line-2);
+    border-radius:9px;padding:11px 18px;font-size:12.5px;box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:30}
+  .toast b{color:var(--ok)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>window.EMBEDDED = {"summary":{"total_alarms":519,"by_priority":{"LOW":490,"CRITICAL":19,"HIGH":10},"incidents":19,"bad_actor_share":85.4,"flood_windows":19,"range":["2025-01-01 14:00:00","2025-01-14 07:07:00"]},"tags_status":[{"tag":"PHOS_ACID_FLOW","alarm_count":443,"worst_priority":"LOW","last_ts":"2025-01-14 02:35:50"},{"tag":"REACTOR_PRESS","alarm_count":20,"worst_priority":"CRITICAL","last_ts":"2025-01-14 07:07:00"},{"tag":"SCRUBBER_PH","alarm_count":20,"worst_priority":"HIGH","last_ts":"2025-01-14 06:59:00"},{"tag":"REACTOR_TEMP","alarm_count":10,"worst_priority":"CRITICAL","last_ts":"2025-01-10 13:03:00"},{"tag":"GRANULATOR_AMPS","alarm_count":8,"worst_priority":"CRITICAL","last_ts":"2025-01-10 01:26:00"},{"tag":"DRYER_TEMP","alarm_count":5,"worst_priority":"LOW","last_ts":"2025-01-10 13:08:00"},{"tag":"NH3_FLOW","alarm_count":5,"worst_priority":"LOW","last_ts":"2025-01-10 12:52:00"},{"tag":"PRODUCT_MOISTURE","alarm_count":4,"worst_priority":"LOW","last_ts":"2025-01-10 01:20:00"},{"tag":"RECYCLE_RATIO","alarm_count":4,"worst_priority":"LOW","last_ts":"2025-01-10 01:08:00"}],"bad_actors":[{"tag":"PHOS_ACID_FLOW","alarm_count":443,"pct":85.4,"cum_pct":85.4},{"tag":"SCRUBBER_PH","alarm_count":20,"pct":3.9,"cum_pct":89.3},{"tag":"REACTOR_PRESS","alarm_count":20,"pct":3.9,"cum_pct":93.2},{"tag":"REACTOR_TEMP","alarm_count":10,"pct":1.9,"cum_pct":95.1},{"tag":"GRANULATOR_AMPS","alarm_count":8,"pct":1.5,"cum_pct":96.6},{"tag":"DRYER_TEMP","alarm_count":5,"pct":1.0,"cum_pct":97.6},{"tag":"NH3_FLOW","alarm_count":5,"pct":1.0,"cum_pct":98.6},{"tag":"PRODUCT_MOISTURE","alarm_count":4,"pct":0.8,"cum_pct":99.4},{"tag":"RECYCLE_RATIO","alarm_count":4,"pct":0.8,"cum_pct":100.2}],"chattering":[{"tag":"PHOS_ACID_FLOW","level":"LO","activations":443,"chattering_events":88}],"floods":[{"window_start":"2025-01-01 14:00:00","alarm_count":14,"top_priority":"LOW"},{"window_start":"2025-01-02 08:00:00","alarm_count":14,"top_priority":"LOW"},{"window_start":"2025-01-02 08:10:00","alarm_count":15,"top_priority":"LOW"},{"window_start":"2025-01-03 11:00:00","alarm_count":11,"top_priority":"LOW"},{"window_start":"2025-01-04 03:00:00","alarm_count":15,"top_priority":"LOW"},{"window_start":"2025-01-04 03:10:00","alarm_count":11,"top_priority":"LOW"},{"window_start":"2025-01-05 18:00:00","alarm_count":14,"top_priority":"LOW"},{"window_start":"2025-01-06 04:00:00","alarm_count":13,"top_priority":"LOW"},{"window_start":"2025-01-06 04:10:00","alarm_count":14,"top_priority":"LOW"},{"window_start":"2025-01-07 14:00:00","alarm_count":13,"top_priority":"LOW"},{"window_start":"2025-01-08 05:00:00","alarm_count":12,"top_priority":"LOW"},{"window_start":"2025-01-09 18:00:00","alarm_count":13,"top_priority":"LOW"},{"window_start":"2025-01-10 11:00:00","alarm_count":11,"top_priority":"LOW"},{"window_start":"2025-01-10 11:10:00","alarm_count":15,"top_priority":"LOW"},{"window_start":"2025-01-11 05:00:00","alarm_count":15,"top_priority":"LOW"},{"window_start":"2025-01-12 15:00:00","alarm_count":15,"top_priority":"LOW"},{"window_start":"2025-01-13 17:00:00","alarm_count":15,"top_priority":"LOW"},{"window_start":"2025-01-13 17:10:00","alarm_count":12,"top_priority":"LOW"},{"window_start":"2025-01-14 02:10:00","alarm_count":12,"top_priority":"LOW"}],"co_occurrence":[{"tag_a":"GRANULATOR_AMPS","tag_b":"PHOS_ACID_FLOW","co_occurrences":49},{"tag_a":"REACTOR_PRESS","tag_b":"SCRUBBER_PH","co_occurrences":40},{"tag_a":"PHOS_ACID_FLOW","tag_b":"RECYCLE_RATIO","co_occurrences":32},{"tag_a":"PHOS_ACID_FLOW","tag_b":"PRODUCT_MOISTURE","co_occurrences":28},{"tag_a":"PHOS_ACID_FLOW","tag_b":"SCRUBBER_PH","co_occurrences":17},{"tag_a":"DRYER_TEMP","tag_b":"REACTOR_TEMP","co_occurrences":10},{"tag_a":"NH3_FLOW","tag_b":"REACTOR_TEMP","co_occurrences":10},{"tag_a":"GRANULATOR_AMPS","tag_b":"PRODUCT_MOISTURE","co_occurrences":8},{"tag_a":"PHOS_ACID_FLOW","tag_b":"REACTOR_PRESS","co_occurrences":8},{"tag_a":"GRANULATOR_AMPS","tag_b":"RECYCLE_RATIO","co_occurrences":4},{"tag_a":"PRODUCT_MOISTURE","tag_b":"RECYCLE_RATIO","co_occurrences":4},{"tag_a":"NH3_FLOW","tag_b":"PHOS_ACID_FLOW","co_occurrences":3}],"sequences":[{"sequence":"SCRUBBER_PH:LO -> SCRUBBER_PH:LOLO -> REACTOR_PRESS:HI -> REACTOR_PRESS:HIHI","occurrences":8},{"sequence":"NH3_FLOW:HI -> REACTOR_TEMP:HI -> REACTOR_TEMP:HIHI -> DRYER_TEMP:HI","occurrences":4},{"sequence":"RECYCLE_RATIO:HI -> GRANULATOR_AMPS:HI -> PRODUCT_MOISTURE:HI -> GRANULATOR_AMPS:HIHI","occurrences":3},{"sequence":"NH3_FLOW:HI -> PHOS_ACID_FLOW:LO -> REACTOR_TEMP:HI -> REACTOR_TEMP:HIHI -> DRYER_TEMP:HI","occurrences":1},{"sequence":"PHOS_ACID_FLOW:LO -> SCRUBBER_PH:LOLO -> REACTOR_PRESS:HI -> PHOS_ACID_FLOW:LO -> REACTOR_PRESS:HIHI","occurrences":1},{"sequence":"SCRUBBER_PH:LO -> SCRUBBER_PH:LOLO -> REACTOR_PRESS:HI -> REACTOR_PRESS:HIHI -> PHOS_ACID_FLOW:LO","occurrences":1}],"root_cause":[{"incident_id":"INC-000","rank":"1","tag":"NH3_FLOW","level":"HI","first_ts":"2025-01-04 10:53:00"},{"incident_id":"INC-000","rank":"2","tag":"REACTOR_TEMP","level":"HI","first_ts":"2025-01-04 10:58:00"},{"incident_id":"INC-000","rank":"3","tag":"DRYER_TEMP","level":"HI","first_ts":"2025-01-04 11:09:00"},{"incident_id":"INC-001","rank":"1","tag":"NH3_FLOW","level":"HI","first_ts":"2025-01-02 02:52:00"},{"incident_id":"INC-001","rank":"2","tag":"REACTOR_TEMP","level":"HI","first_ts":"2025-01-02 02:57:00"},{"incident_id":"INC-001","rank":"3","tag":"DRYER_TEMP","level":"HI","first_ts":"2025-01-02 03:08:00"},{"incident_id":"INC-002","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-13 05:09:00"},{"incident_id":"INC-002","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-13 05:18:00"},{"incident_id":"INC-003","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-09 08:12:00"},{"incident_id":"INC-003","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-09 08:21:00"},{"incident_id":"INC-004","rank":"1","tag":"RECYCLE_RATIO","level":"HI","first_ts":"2025-01-02 08:10:00"},{"incident_id":"INC-004","rank":"2","tag":"GRANULATOR_AMPS","level":"HI","first_ts":"2025-01-02 08:17:00"},{"incident_id":"INC-004","rank":"3","tag":"PRODUCT_MOISTURE","level":"HI","first_ts":"2025-01-02 08:22:00"},{"incident_id":"INC-005","rank":"1","tag":"RECYCLE_RATIO","level":"HI","first_ts":"2025-01-05 21:45:00"},{"incident_id":"INC-005","rank":"2","tag":"GRANULATOR_AMPS","level":"HI","first_ts":"2025-01-05 21:52:00"},{"incident_id":"INC-005","rank":"3","tag":"PRODUCT_MOISTURE","level":"HI","first_ts":"2025-01-05 21:57:00"},{"incident_id":"INC-006","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-02 23:26:00"},{"incident_id":"INC-006","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-02 23:35:00"},{"incident_id":"INC-007","rank":"1","tag":"NH3_FLOW","level":"HI","first_ts":"2025-01-10 12:52:00"},{"incident_id":"INC-007","rank":"2","tag":"REACTOR_TEMP","level":"HI","first_ts":"2025-01-10 12:57:00"},{"incident_id":"INC-007","rank":"3","tag":"DRYER_TEMP","level":"HI","first_ts":"2025-01-10 13:08:00"},{"incident_id":"INC-008","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-06 11:56:00"},{"incident_id":"INC-008","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-06 12:05:00"},{"incident_id":"INC-009","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-13 13:26:00"},{"incident_id":"INC-009","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-13 13:35:00"},{"incident_id":"INC-010","rank":"1","tag":"NH3_FLOW","level":"HI","first_ts":"2025-01-02 08:46:00"},{"incident_id":"INC-010","rank":"2","tag":"REACTOR_TEMP","level":"HI","first_ts":"2025-01-02 08:51:00"},{"incident_id":"INC-010","rank":"3","tag":"DRYER_TEMP","level":"HI","first_ts":"2025-01-02 09:02:00"},{"incident_id":"INC-011","rank":"1","tag":"RECYCLE_RATIO","level":"HI","first_ts":"2025-01-03 20:06:00"},{"incident_id":"INC-011","rank":"2","tag":"GRANULATOR_AMPS","level":"HI","first_ts":"2025-01-03 20:13:00"},{"incident_id":"INC-011","rank":"3","tag":"PRODUCT_MOISTURE","level":"HI","first_ts":"2025-01-03 20:18:00"},{"incident_id":"INC-012","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-14 06:53:00"},{"incident_id":"INC-012","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-14 07:02:00"},{"incident_id":"INC-013","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-14 03:40:00"},{"incident_id":"INC-013","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-14 03:49:00"},{"incident_id":"INC-014","rank":"1","tag":"RECYCLE_RATIO","level":"HI","first_ts":"2025-01-10 01:08:00"},{"incident_id":"INC-014","rank":"2","tag":"GRANULATOR_AMPS","level":"HI","first_ts":"2025-01-10 01:15:00"},{"incident_id":"INC-014","rank":"3","tag":"PRODUCT_MOISTURE","level":"HI","first_ts":"2025-01-10 01:20:00"},{"incident_id":"INC-015","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-06 01:14:00"},{"incident_id":"INC-015","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-06 01:23:00"},{"incident_id":"INC-016","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-13 16:30:00"},{"incident_id":"INC-016","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-13 16:39:00"},{"incident_id":"INC-017","rank":"1","tag":"SCRUBBER_PH","level":"LO","first_ts":"2025-01-07 14:39:00"},{"incident_id":"INC-017","rank":"2","tag":"REACTOR_PRESS","level":"HI","first_ts":"2025-01-07 14:48:00"},{"incident_id":"INC-018","rank":"1","tag":"NH3_FLOW","level":"HI","first_ts":"2025-01-04 07:16:00"},{"incident_id":"INC-018","rank":"2","tag":"REACTOR_TEMP","level":"HI","first_ts":"2025-01-04 07:21:00"},{"incident_id":"INC-018","rank":"3","tag":"DRYER_TEMP","level":"HI","first_ts":"2025-01-04 07:32:00"}]};</script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+/* Human root-cause hints keyed by the earliest-firing tag — a stand-in for the
+   Neo4j knowledge base (tag -> probable cause -> action). */
+const CAUSE_HINTS = {
+  SCRUBBER_PH:    "Scrubber recirculation pump fouling",
+  NH3_FLOW:       "NH3 / phosphoric acid ratio controller drift",
+  RECYCLE_RATIO:  "Wet-product recycle buildup in granulator",
+  REACTOR_TEMP:   "Reactor exotherm / cooling shortfall",
+  REACTOR_PRESS:  "Off-gas back-pressure from scrubber",
+  GRANULATOR_AMPS:"Granulator load / bed overload",
+  PRODUCT_MOISTURE:"Dryer duty / moisture control loss",
+};
+const PRI_OF_LEVEL = { LOLO:"CRITICAL", HIHI:"CRITICAL", LO:"LOW", HI:"LOW" };
+
+const Icon = ({d}) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{d}</svg>
+);
+const ICONS = {
+  overview: <Icon d={<><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></>}/>,
+  bad:      <Icon d={<><line x1="4" y1="20" x2="4" y2="10"/><line x1="10" y1="20" x2="10" y2="4"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="21" y1="20" x2="3" y2="20"/></>}/>,
+  nuisance: <Icon d={<><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></>}/>,
+  corr:     <Icon d={<><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8 8l8 8"/></>}/>,
+  seq:      <Icon d={<><rect x="3" y="9" width="5" height="6" rx="1"/><rect x="16" y="9" width="5" height="6" rx="1"/><path d="M8 12h8"/></>}/>,
+  rc:       <Icon d={<><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/></>}/>,
+  spark:    <Icon d={<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>}/>,
+};
+
+/* ---------------- data loading ---------------- */
+async function loadLive(){
+  const g = p => fetch(p).then(r => { if(!r.ok) throw new Error(p); return r.json(); });
+  const [summary,tags_status,bad_actors,chattering,floods,co_occurrence,sequences,root_cause] =
+    await Promise.all(["/api/summary","/api/tags-status","/api/bad-actors","/api/chattering",
+      "/api/floods","/api/co-occurrence","/api/sequences","/api/root-cause"].map(g));
+  return { summary,tags_status,bad_actors,chattering,floods,co_occurrence,sequences,root_cause };
+}
+
+/* ---------------- small view helpers ---------------- */
+function Readout({k,v,u,tone,fill}){
+  return (
+    <div className={"readout "+(tone||"")}>
+      <div className="k">{k}</div>
+      <div className="v">{v}<span className="u">{u}</span></div>
+      {fill!=null && <div className="spark"><i style={{width:Math.min(100,fill)+"%"}}/></div>}
+    </div>
+  );
+}
+
+/* ---------------- OVERVIEW ---------------- */
+function Overview({data}){
+  const s = data.summary, pri = s.by_priority||{};
+  const total = (pri.CRITICAL||0)+(pri.HIGH||0)+(pri.LOW||0) || 1;
+  return (
+    <div className="view">
+      <div className="eyebrow">Situation overview</div>
+      <p className="lead">Live abnormal-condition summary for the line. The panel below is an annunciator:
+        each instrument lights by its worst active alarm priority, ordered by alarm load.</p>
+      <div className="readouts">
+        <Readout k="Active alarms" v={s.total_alarms.toLocaleString()} />
+        <Readout k="Critical" v={pri.CRITICAL||0} tone="crit" />
+        <Readout k="Incidents" v={s.incidents} />
+        <Readout k="Top bad-actor share" v={s.bad_actor_share} u="%" tone="warn" fill={s.bad_actor_share}/>
+        <Readout k="Flood windows" v={s.flood_windows} tone="warn" />
+      </div>
+
+      <div className="panel">
+        <h3>Alarm priority distribution</h3>
+        <p className="note">A healthy system is dominated by low-priority alarms; critical events should be rare.</p>
+        <div className="pbar">
+          <i className="c" style={{width:(100*(pri.CRITICAL||0)/total)+"%"}}/>
+          <i className="h" style={{width:(100*(pri.HIGH||0)/total)+"%"}}/>
+          <i className="l" style={{width:(100*(pri.LOW||0)/total)+"%"}}/>
+        </div>
+        <div className="plegend">
+          <span><b style={{background:"var(--critical)"}}/>Critical · {pri.CRITICAL||0}</span>
+          <span><b style={{background:"var(--high)"}}/>High · {pri.HIGH||0}</span>
+          <span><b style={{background:"var(--low)"}}/>Low · {pri.LOW||0}</span>
+        </div>
+      </div>
+
+      <div className="panel">
+        <h3>Annunciator panel</h3>
+        <p className="note">{data.tags_status.length} instruments monitored · sorted by alarm count</p>
+        <div className="annun">
+          {data.tags_status.map(t=>(
+            <div key={t.tag} className={"cell "+t.worst_priority.toLowerCase()}>
+              <span className="led"/>
+              <div className="tag">{t.tag}</div>
+              <div className="cnt">{t.alarm_count}</div>
+              <div className="lvl">{t.worst_priority}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- BAD ACTORS (Pareto) ---------------- */
+function Pareto({data}){
+  const rows = data.bad_actors;
+  const W=760,H=320,mL=44,mR=44,mT=16,mB=72;
+  const iw=W-mL-mR, ih=H-mT-mB;
+  const maxCount = Math.max(...rows.map(r=>r.alarm_count));
+  const bw = iw/rows.length;
+  const x = i => mL + i*bw;
+  const yC = c => mT + ih - (c/maxCount)*ih;
+  const yP = p => mT + ih - (p/100)*ih;
+  const cumPts = rows.map((r,i)=>[x(i)+bw/2, yP(r.cum_pct)]);
+  return (
+    <div className="view">
+      <div className="eyebrow">Bad actors · ISA-18.2</div>
+      <p className="lead">Which instruments generate the alarm load. Typically a handful of "bad actors" produce
+        the great majority of alarms — rationalizing them is the fastest way to cut operator burden.</p>
+      <div className="panel">
+        <h3>Alarm count by source, with cumulative share</h3>
+        <p className="note">Bars: alarm count (left axis) · line: cumulative % (right axis) · dashed: 80% line</p>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Pareto chart of alarms by tag">
+          {[0,.25,.5,.75,1].map((f,i)=>(
+            <g key={i}>
+              <line className="gridline" x1={mL} x2={W-mR} y1={mT+ih-f*ih} y2={mT+ih-f*ih}/>
+              <text className="axis-t" x={mL-8} y={mT+ih-f*ih+3} textAnchor="end">{Math.round(f*maxCount)}</text>
+              <text className="axis-t" x={W-mR+8} y={mT+ih-f*ih+3}>{Math.round(f*100)}</text>
+            </g>
+          ))}
+          <line className="gridline" x1={mL} x2={W-mR} y1={yP(80)} y2={yP(80)} style={{stroke:"var(--high)",opacity:.5,strokeDasharray:"4 4"}}/>
+          {rows.map((r,i)=>(
+            <rect key={r.tag} x={x(i)+bw*0.16} y={yC(r.alarm_count)} width={bw*0.68}
+              height={mT+ih-yC(r.alarm_count)} rx="2"
+              fill={i===0?"var(--critical)":"var(--accent)"} opacity={i===0?.9:.65}/>
+          ))}
+          <polyline fill="none" stroke="var(--high)" strokeWidth="1.6" points={cumPts.map(p=>p.join(",")).join(" ")}/>
+          {cumPts.map((p,i)=><circle key={i} cx={p[0]} cy={p[1]} r="2.6" fill="var(--high)"/>)}
+          {rows.map((r,i)=>(
+            <text key={r.tag} className="axis-t" transform={`translate(${x(i)+bw/2},${mT+ih+12}) rotate(-40)`} textAnchor="end">
+              {r.tag.replace(/_/g," ").toLowerCase()}
+            </text>
+          ))}
+        </svg>
+      </div>
+      <div className="panel">
+        <h3>Ranked sources</h3>
+        <div className="rows">
+          {rows.map((r,i)=>(
+            <div key={r.tag} className={"rrow"+(i===0?" key":"")}>
+              <div className="pair">{r.tag}</div>
+              <div className="track"><i style={{width:(100*r.alarm_count/maxCount)+"%"}}/></div>
+              <div className="n">{r.pct}%</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- NUISANCE (chattering + floods) ---------------- */
+function Nuisance({data}){
+  const fl = data.floods;
+  const times = fl.map(f=>new Date(f.window_start.replace(" ","T")).getTime());
+  const t0=Math.min(...times), t1=Math.max(...times);
+  const maxN=Math.max(...fl.map(f=>f.alarm_count));
+  const W=760,H=170,mL=8,mR=8,mT=12,mB=26,iw=W-mL-mR,ih=H-mT-mB;
+  const xt = t => mL + (t1===t0?0:(t-t0)/(t1-t0))*iw;
+  const priColor = p => p==="CRITICAL"?"var(--critical)":p==="HIGH"?"var(--high)":"var(--low)";
+  return (
+    <div className="view">
+      <div className="eyebrow">Nuisance & flooding · EEMUA-191</div>
+      <p className="lead">Two classic failure modes: chattering instruments that re-alarm many times a minute,
+        and alarm floods that overwhelm the operator during upsets.</p>
+
+      <div className="panel">
+        <h3>Chattering instruments</h3>
+        <p className="note">Same alarm re-activating ≥3× within 60 s — prime candidates for a deadband or filter fix</p>
+        {data.chattering.length===0 ? <p className="note">None detected.</p> :
+          <div className="rows">
+            {data.chattering.map(c=>(
+              <div key={c.tag+c.level} className="rrow key">
+                <div className="pair">{c.tag} <em>· {c.level}</em></div>
+                <div className="track"><i style={{width:"100%"}}/></div>
+                <div className="n">{c.chattering_events}</div>
+              </div>
+            ))}
+          </div>}
+      </div>
+
+      <div className="panel">
+        <h3>Alarm floods over time</h3>
+        <p className="note">Each bar is a 10-minute window exceeding 10 alarms · height ∝ count · color ∝ priority</p>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Alarm flood timeline">
+          <line className="axis" x1={mL} x2={W-mR} y1={mT+ih} y2={mT+ih}/>
+          {fl.map((f,i)=>{
+            const h=(f.alarm_count/maxN)*ih;
+            return <rect key={i} x={xt(times[i])-3} y={mT+ih-h} width="6" height={h} rx="1.5"
+              fill={priColor(f.top_priority)} opacity=".8"/>;
+          })}
+          <text className="axis-t" x={mL} y={H-8}>{new Date(t0).toISOString().slice(0,10)}</text>
+          <text className="axis-t" x={W-mR} y={H-8} textAnchor="end">{new Date(t1).toISOString().slice(0,10)}</text>
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- CORRELATIONS ---------------- */
+function Correlations({data}){
+  const rows = data.co_occurrence;
+  const max = Math.max(...rows.map(r=>r.co_occurrences));
+  const KEY = new Set(["REACTOR_PRESS|SCRUBBER_PH","NH3_FLOW|REACTOR_TEMP","DRYER_TEMP|REACTOR_TEMP","GRANULATOR_AMPS|RECYCLE_RATIO","PRODUCT_MOISTURE|RECYCLE_RATIO"]);
+  const isKey = r => KEY.has([r.tag_a,r.tag_b].sort().join("|"));
+  return (
+    <div className="view">
+      <div className="eyebrow">Alarm correlation</div>
+      <p className="lead">Instrument pairs whose alarms repeatedly fire together within a short window. Strong,
+        process-meaningful pairs (highlighted) are candidate cause-and-effect links feeding root-cause analysis.</p>
+      <div className="panel">
+        <h3>Top co-occurring alarm pairs</h3>
+        <p className="note">Within a 15-minute window · highlighted pairs align with a known process pathway</p>
+        <div className="rows">
+          {rows.map((r,i)=>(
+            <div key={i} className={"rrow"+(isKey(r)?" key":"")}>
+              <div className="pair">{r.tag_a} <em>·</em> {r.tag_b}</div>
+              <div className="track"><i style={{width:(100*r.co_occurrences/max)+"%"}}/></div>
+              <div className="n">{r.co_occurrences}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- SEQUENCES ---------------- */
+function Sequences({data}){
+  return (
+    <div className="view">
+      <div className="eyebrow">Pre-incident sequences</div>
+      <p className="lead">Recurring ordered alarm patterns that precede a critical trip. Once a signature is known,
+        it becomes an early-warning rule — the platform can flag the pattern before the trip repeats.</p>
+      {data.sequences.map((s,i)=>{
+        const steps = s.sequence.split(" -> ").map(x=>{
+          const [tag,level]=x.split(":"); return {tag,level,pri:PRI_OF_LEVEL[level]||"LOW"};
+        });
+        return (
+          <div key={i} className="seq">
+            <div className="head">
+              <span className="occ">seen <b>{s.occurrences}×</b></span>
+              {i===0 && <span className="tip">most frequent signature</span>}
+            </div>
+            <div className="chain">
+              {steps.map((st,j)=>(
+                <React.Fragment key={j}>
+                  <div className={"step "+st.pri}>
+                    <div className="st">{st.tag}</div>
+                    <div className="sl">{st.level}</div>
+                  </div>
+                  {j<steps.length-1 && <span className="arrow">→</span>}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ---------------- ROOT CAUSE ---------------- */
+function RootCause({data,onToast}){
+  const incidents = useMemo(()=>{
+    const by={};
+    data.root_cause.forEach(r=>{ (by[r.incident_id]=by[r.incident_id]||[]).push(r); });
+    return Object.entries(by).map(([id,rows])=>{
+      rows.sort((a,b)=>(+a.rank)-(+b.rank));
+      const top=rows[0];
+      return { id, rows, top, cause:CAUSE_HINTS[top.tag]||("Investigate "+top.tag), when:top.first_ts };
+    });
+  },[data]);
+  const [sel,setSel]=useState(incidents[0]?.id);
+  const [done,setDone]=useState({});
+  const cur = incidents.find(i=>i.id===sel)||incidents[0];
+
+  return (
+    <div className="view">
+      <div className="eyebrow">Root-cause analysis</div>
+      <p className="lead">For each incident the platform ranks probable contributing instruments — earliest-firing
+        first, because causes precede effects. Confirming a diagnosis writes it to the knowledge base so future
+        matches are recognized automatically.</p>
+      <div className="rc">
+        <div className="inc-list">
+          {incidents.map(inc=>(
+            <button key={inc.id} className={"inc"+(inc.id===sel?" sel":"")+(done[inc.id]?" done":"")}
+              onClick={()=>setSel(inc.id)}>
+              <div className="id">{inc.id}{done[inc.id] && " ✓"}</div>
+              <div className="cause">{inc.cause}</div>
+              <div className="when">{inc.when}</div>
+            </button>
+          ))}
+        </div>
+        {cur && (
+          <div className="detail">
+            <div className="dl">Probable root cause · {cur.id}</div>
+            <div className="cause-lg">{cur.cause}</div>
+            <div className="conf">Primary indicator: {cur.top.tag} · {cur.top.level}</div>
+            <div className="cand">
+              <table>
+                <thead><tr><th>Rank</th><th>Instrument</th><th>Level</th><th>First seen</th></tr></thead>
+                <tbody>
+                  {cur.rows.slice(0,6).map(r=>(
+                    <tr key={r.rank+r.tag}>
+                      <td className={"rk"+(+r.rank===1?" one":"")}>#{r.rank}</td>
+                      <td>{r.tag}</td>
+                      <td><span className={"lvltag "+r.level}>{r.level}</span></td>
+                      <td className="rk">{(r.first_ts||"").slice(0,19)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <button className={"btn"+(done[cur.id]?" done":"")} disabled={!!done[cur.id]}
+              onClick={()=>{ setDone({...done,[cur.id]:true}); onToast(cur.id); }}>
+              {done[cur.id] ? "✓ Saved to knowledge base" : "Confirm root cause"}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- APP ---------------- */
+const VIEWS = [
+  ["overview","Overview",Overview],
+  ["bad","Bad actors",Pareto],
+  ["nuisance","Nuisance alarms",Nuisance],
+  ["corr","Correlations",Correlations],
+  ["seq","Sequences",Sequences],
+  ["rc","Root cause",RootCause],
+];
+
+function App(){
+  const [data,setData]=useState(null);
+  const [source,setSource]=useState("...");
+  const [tab,setTab]=useState("overview");
+  const [toast,setToast]=useState(null);
+
+  useEffect(()=>{
+    let ok=true;
+    loadLive().then(d=>{ if(ok){ setData(d); setSource("live"); }})
+      .catch(()=>{ if(ok){ setData(window.EMBEDDED); setSource("sample"); }});
+    return ()=>{ ok=false; };
+  },[]);
+
+  function fireToast(id){ setToast(id); setTimeout(()=>setToast(null),2600); }
+
+  if(!data) return <div style={{display:"grid",placeItems:"center",height:"100vh",color:"var(--muted)",fontFamily:"var(--mono)"}}>Loading…</div>;
+
+  const View = VIEWS.find(v=>v[0]===tab)[2];
+  const crit = data.summary.by_priority?.CRITICAL||0;
+
+  return (
+    <div className="app">
+      <aside className="rail">
+        <div className="brand">
+          <div className="mark">{ICONS.spark}</div>
+          <div><b>Alarm Intelligence</b><span>OCP</span></div>
+        </div>
+        <nav className="nav">
+          {VIEWS.map(([id,label])=>(
+            <button key={id} className={tab===id?"on":""} onClick={()=>setTab(id)}>
+              {ICONS[id]}<span>{label}</span>
+              {id==="overview" && crit>0 && <span className="badge">{crit}</span>}
+            </button>
+          ))}
+        </nav>
+        <div className="rail-foot">MAP granulation · v0.1</div>
+      </aside>
+
+      <main className="main">
+        <header className="topbar">
+          <h1>MAP Line 2</h1>
+          <span className="sub">Jorf Lasfar · {data.summary.range?.[0]?.slice(0,10)} → {data.summary.range?.[1]?.slice(0,10)}</span>
+          <div className={"src "+source}>
+            <span className="dot"/>{source==="live"?"LIVE API":"SAMPLE DATA"}
+          </div>
+        </header>
+        <View data={data} onToast={fireToast}/>
+      </main>
+
+      {toast && <div className="toast"><b>{toast}</b> confirmed and saved to the knowledge base</div>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

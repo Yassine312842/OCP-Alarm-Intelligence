@@ -1,0 +1,653 @@
+{
+  "summary": {
+    "total_alarms": 519,
+    "by_priority": {
+      "LOW": 490,
+      "CRITICAL": 19,
+      "HIGH": 10
+    },
+    "incidents": 19,
+    "bad_actor_share": 85.4,
+    "flood_windows": 19,
+    "range": [
+      "2025-01-01 14:00:00",
+      "2025-01-14 07:07:00"
+    ]
+  },
+  "tags_status": [
+    {
+      "tag": "PHOS_ACID_FLOW",
+      "alarm_count": 443,
+      "worst_priority": "LOW",
+      "last_ts": "2025-01-14 02:35:50"
+    },
+    {
+      "tag": "REACTOR_PRESS",
+      "alarm_count": 20,
+      "worst_priority": "CRITICAL",
+      "last_ts": "2025-01-14 07:07:00"
+    },
+    {
+      "tag": "SCRUBBER_PH",
+      "alarm_count": 20,
+      "worst_priority": "HIGH",
+      "last_ts": "2025-01-14 06:59:00"
+    },
+    {
+      "tag": "REACTOR_TEMP",
+      "alarm_count": 10,
+      "worst_priority": "CRITICAL",
+      "last_ts": "2025-01-10 13:03:00"
+    },
+    {
+      "tag": "GRANULATOR_AMPS",
+      "alarm_count": 8,
+      "worst_priority": "CRITICAL",
+      "last_ts": "2025-01-10 01:26:00"
+    },
+    {
+      "tag": "DRYER_TEMP",
+      "alarm_count": 5,
+      "worst_priority": "LOW",
+      "last_ts": "2025-01-10 13:08:00"
+    },
+    {
+      "tag": "NH3_FLOW",
+      "alarm_count": 5,
+      "worst_priority": "LOW",
+      "last_ts": "2025-01-10 12:52:00"
+    },
+    {
+      "tag": "PRODUCT_MOISTURE",
+      "alarm_count": 4,
+      "worst_priority": "LOW",
+      "last_ts": "2025-01-10 01:20:00"
+    },
+    {
+      "tag": "RECYCLE_RATIO",
+      "alarm_count": 4,
+      "worst_priority": "LOW",
+      "last_ts": "2025-01-10 01:08:00"
+    }
+  ],
+  "bad_actors": [
+    {
+      "tag": "PHOS_ACID_FLOW",
+      "alarm_count": 443,
+      "pct": 85.4,
+      "cum_pct": 85.4
+    },
+    {
+      "tag": "SCRUBBER_PH",
+      "alarm_count": 20,
+      "pct": 3.9,
+      "cum_pct": 89.3
+    },
+    {
+      "tag": "REACTOR_PRESS",
+      "alarm_count": 20,
+      "pct": 3.9,
+      "cum_pct": 93.2
+    },
+    {
+      "tag": "REACTOR_TEMP",
+      "alarm_count": 10,
+      "pct": 1.9,
+      "cum_pct": 95.1
+    },
+    {
+      "tag": "GRANULATOR_AMPS",
+      "alarm_count": 8,
+      "pct": 1.5,
+      "cum_pct": 96.6
+    },
+    {
+      "tag": "DRYER_TEMP",
+      "alarm_count": 5,
+      "pct": 1.0,
+      "cum_pct": 97.6
+    },
+    {
+      "tag": "NH3_FLOW",
+      "alarm_count": 5,
+      "pct": 1.0,
+      "cum_pct": 98.6
+    },
+    {
+      "tag": "PRODUCT_MOISTURE",
+      "alarm_count": 4,
+      "pct": 0.8,
+      "cum_pct": 99.4
+    },
+    {
+      "tag": "RECYCLE_RATIO",
+      "alarm_count": 4,
+      "pct": 0.8,
+      "cum_pct": 100.2
+    }
+  ],
+  "chattering": [
+    {
+      "tag": "PHOS_ACID_FLOW",
+      "level": "LO",
+      "activations": 443,
+      "chattering_events": 88
+    }
+  ],
+  "floods": [
+    {
+      "window_start": "2025-01-01 14:00:00",
+      "alarm_count": 14,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-02 08:00:00",
+      "alarm_count": 14,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-02 08:10:00",
+      "alarm_count": 15,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-03 11:00:00",
+      "alarm_count": 11,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-04 03:00:00",
+      "alarm_count": 15,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-04 03:10:00",
+      "alarm_count": 11,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-05 18:00:00",
+      "alarm_count": 14,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-06 04:00:00",
+      "alarm_count": 13,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-06 04:10:00",
+      "alarm_count": 14,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-07 14:00:00",
+      "alarm_count": 13,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-08 05:00:00",
+      "alarm_count": 12,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-09 18:00:00",
+      "alarm_count": 13,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-10 11:00:00",
+      "alarm_count": 11,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-10 11:10:00",
+      "alarm_count": 15,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-11 05:00:00",
+      "alarm_count": 15,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-12 15:00:00",
+      "alarm_count": 15,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-13 17:00:00",
+      "alarm_count": 15,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-13 17:10:00",
+      "alarm_count": 12,
+      "top_priority": "LOW"
+    },
+    {
+      "window_start": "2025-01-14 02:10:00",
+      "alarm_count": 12,
+      "top_priority": "LOW"
+    }
+  ],
+  "co_occurrence": [
+    {
+      "tag_a": "GRANULATOR_AMPS",
+      "tag_b": "PHOS_ACID_FLOW",
+      "co_occurrences": 49
+    },
+    {
+      "tag_a": "REACTOR_PRESS",
+      "tag_b": "SCRUBBER_PH",
+      "co_occurrences": 40
+    },
+    {
+      "tag_a": "PHOS_ACID_FLOW",
+      "tag_b": "RECYCLE_RATIO",
+      "co_occurrences": 32
+    },
+    {
+      "tag_a": "PHOS_ACID_FLOW",
+      "tag_b": "PRODUCT_MOISTURE",
+      "co_occurrences": 28
+    },
+    {
+      "tag_a": "PHOS_ACID_FLOW",
+      "tag_b": "SCRUBBER_PH",
+      "co_occurrences": 17
+    },
+    {
+      "tag_a": "DRYER_TEMP",
+      "tag_b": "REACTOR_TEMP",
+      "co_occurrences": 10
+    },
+    {
+      "tag_a": "NH3_FLOW",
+      "tag_b": "REACTOR_TEMP",
+      "co_occurrences": 10
+    },
+    {
+      "tag_a": "GRANULATOR_AMPS",
+      "tag_b": "PRODUCT_MOISTURE",
+      "co_occurrences": 8
+    },
+    {
+      "tag_a": "PHOS_ACID_FLOW",
+      "tag_b": "REACTOR_PRESS",
+      "co_occurrences": 8
+    },
+    {
+      "tag_a": "GRANULATOR_AMPS",
+      "tag_b": "RECYCLE_RATIO",
+      "co_occurrences": 4
+    },
+    {
+      "tag_a": "PRODUCT_MOISTURE",
+      "tag_b": "RECYCLE_RATIO",
+      "co_occurrences": 4
+    },
+    {
+      "tag_a": "NH3_FLOW",
+      "tag_b": "PHOS_ACID_FLOW",
+      "co_occurrences": 3
+    }
+  ],
+  "sequences": [
+    {
+      "sequence": "SCRUBBER_PH:LO -> SCRUBBER_PH:LOLO -> REACTOR_PRESS:HI -> REACTOR_PRESS:HIHI",
+      "occurrences": 8
+    },
+    {
+      "sequence": "NH3_FLOW:HI -> REACTOR_TEMP:HI -> REACTOR_TEMP:HIHI -> DRYER_TEMP:HI",
+      "occurrences": 4
+    },
+    {
+      "sequence": "RECYCLE_RATIO:HI -> GRANULATOR_AMPS:HI -> PRODUCT_MOISTURE:HI -> GRANULATOR_AMPS:HIHI",
+      "occurrences": 3
+    },
+    {
+      "sequence": "NH3_FLOW:HI -> PHOS_ACID_FLOW:LO -> REACTOR_TEMP:HI -> REACTOR_TEMP:HIHI -> DRYER_TEMP:HI",
+      "occurrences": 1
+    },
+    {
+      "sequence": "PHOS_ACID_FLOW:LO -> SCRUBBER_PH:LOLO -> REACTOR_PRESS:HI -> PHOS_ACID_FLOW:LO -> REACTOR_PRESS:HIHI",
+      "occurrences": 1
+    },
+    {
+      "sequence": "SCRUBBER_PH:LO -> SCRUBBER_PH:LOLO -> REACTOR_PRESS:HI -> REACTOR_PRESS:HIHI -> PHOS_ACID_FLOW:LO",
+      "occurrences": 1
+    }
+  ],
+  "root_cause": [
+    {
+      "incident_id": "INC-000",
+      "rank": "1",
+      "tag": "NH3_FLOW",
+      "level": "HI",
+      "first_ts": "2025-01-04 10:53:00"
+    },
+    {
+      "incident_id": "INC-000",
+      "rank": "2",
+      "tag": "REACTOR_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-04 10:58:00"
+    },
+    {
+      "incident_id": "INC-000",
+      "rank": "3",
+      "tag": "DRYER_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-04 11:09:00"
+    },
+    {
+      "incident_id": "INC-001",
+      "rank": "1",
+      "tag": "NH3_FLOW",
+      "level": "HI",
+      "first_ts": "2025-01-02 02:52:00"
+    },
+    {
+      "incident_id": "INC-001",
+      "rank": "2",
+      "tag": "REACTOR_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-02 02:57:00"
+    },
+    {
+      "incident_id": "INC-001",
+      "rank": "3",
+      "tag": "DRYER_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-02 03:08:00"
+    },
+    {
+      "incident_id": "INC-002",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-13 05:09:00"
+    },
+    {
+      "incident_id": "INC-002",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-13 05:18:00"
+    },
+    {
+      "incident_id": "INC-003",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-09 08:12:00"
+    },
+    {
+      "incident_id": "INC-003",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-09 08:21:00"
+    },
+    {
+      "incident_id": "INC-004",
+      "rank": "1",
+      "tag": "RECYCLE_RATIO",
+      "level": "HI",
+      "first_ts": "2025-01-02 08:10:00"
+    },
+    {
+      "incident_id": "INC-004",
+      "rank": "2",
+      "tag": "GRANULATOR_AMPS",
+      "level": "HI",
+      "first_ts": "2025-01-02 08:17:00"
+    },
+    {
+      "incident_id": "INC-004",
+      "rank": "3",
+      "tag": "PRODUCT_MOISTURE",
+      "level": "HI",
+      "first_ts": "2025-01-02 08:22:00"
+    },
+    {
+      "incident_id": "INC-005",
+      "rank": "1",
+      "tag": "RECYCLE_RATIO",
+      "level": "HI",
+      "first_ts": "2025-01-05 21:45:00"
+    },
+    {
+      "incident_id": "INC-005",
+      "rank": "2",
+      "tag": "GRANULATOR_AMPS",
+      "level": "HI",
+      "first_ts": "2025-01-05 21:52:00"
+    },
+    {
+      "incident_id": "INC-005",
+      "rank": "3",
+      "tag": "PRODUCT_MOISTURE",
+      "level": "HI",
+      "first_ts": "2025-01-05 21:57:00"
+    },
+    {
+      "incident_id": "INC-006",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-02 23:26:00"
+    },
+    {
+      "incident_id": "INC-006",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-02 23:35:00"
+    },
+    {
+      "incident_id": "INC-007",
+      "rank": "1",
+      "tag": "NH3_FLOW",
+      "level": "HI",
+      "first_ts": "2025-01-10 12:52:00"
+    },
+    {
+      "incident_id": "INC-007",
+      "rank": "2",
+      "tag": "REACTOR_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-10 12:57:00"
+    },
+    {
+      "incident_id": "INC-007",
+      "rank": "3",
+      "tag": "DRYER_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-10 13:08:00"
+    },
+    {
+      "incident_id": "INC-008",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-06 11:56:00"
+    },
+    {
+      "incident_id": "INC-008",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-06 12:05:00"
+    },
+    {
+      "incident_id": "INC-009",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-13 13:26:00"
+    },
+    {
+      "incident_id": "INC-009",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-13 13:35:00"
+    },
+    {
+      "incident_id": "INC-010",
+      "rank": "1",
+      "tag": "NH3_FLOW",
+      "level": "HI",
+      "first_ts": "2025-01-02 08:46:00"
+    },
+    {
+      "incident_id": "INC-010",
+      "rank": "2",
+      "tag": "REACTOR_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-02 08:51:00"
+    },
+    {
+      "incident_id": "INC-010",
+      "rank": "3",
+      "tag": "DRYER_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-02 09:02:00"
+    },
+    {
+      "incident_id": "INC-011",
+      "rank": "1",
+      "tag": "RECYCLE_RATIO",
+      "level": "HI",
+      "first_ts": "2025-01-03 20:06:00"
+    },
+    {
+      "incident_id": "INC-011",
+      "rank": "2",
+      "tag": "GRANULATOR_AMPS",
+      "level": "HI",
+      "first_ts": "2025-01-03 20:13:00"
+    },
+    {
+      "incident_id": "INC-011",
+      "rank": "3",
+      "tag": "PRODUCT_MOISTURE",
+      "level": "HI",
+      "first_ts": "2025-01-03 20:18:00"
+    },
+    {
+      "incident_id": "INC-012",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-14 06:53:00"
+    },
+    {
+      "incident_id": "INC-012",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-14 07:02:00"
+    },
+    {
+      "incident_id": "INC-013",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-14 03:40:00"
+    },
+    {
+      "incident_id": "INC-013",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-14 03:49:00"
+    },
+    {
+      "incident_id": "INC-014",
+      "rank": "1",
+      "tag": "RECYCLE_RATIO",
+      "level": "HI",
+      "first_ts": "2025-01-10 01:08:00"
+    },
+    {
+      "incident_id": "INC-014",
+      "rank": "2",
+      "tag": "GRANULATOR_AMPS",
+      "level": "HI",
+      "first_ts": "2025-01-10 01:15:00"
+    },
+    {
+      "incident_id": "INC-014",
+      "rank": "3",
+      "tag": "PRODUCT_MOISTURE",
+      "level": "HI",
+      "first_ts": "2025-01-10 01:20:00"
+    },
+    {
+      "incident_id": "INC-015",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-06 01:14:00"
+    },
+    {
+      "incident_id": "INC-015",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-06 01:23:00"
+    },
+    {
+      "incident_id": "INC-016",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-13 16:30:00"
+    },
+    {
+      "incident_id": "INC-016",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-13 16:39:00"
+    },
+    {
+      "incident_id": "INC-017",
+      "rank": "1",
+      "tag": "SCRUBBER_PH",
+      "level": "LO",
+      "first_ts": "2025-01-07 14:39:00"
+    },
+    {
+      "incident_id": "INC-017",
+      "rank": "2",
+      "tag": "REACTOR_PRESS",
+      "level": "HI",
+      "first_ts": "2025-01-07 14:48:00"
+    },
+    {
+      "incident_id": "INC-018",
+      "rank": "1",
+      "tag": "NH3_FLOW",
+      "level": "HI",
+      "first_ts": "2025-01-04 07:16:00"
+    },
+    {
+      "incident_id": "INC-018",
+      "rank": "2",
+      "tag": "REACTOR_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-04 07:21:00"
+    },
+    {
+      "incident_id": "INC-018",
+      "rank": "3",
+      "tag": "DRYER_TEMP",
+      "level": "HI",
+      "first_ts": "2025-01-04 07:32:00"
+    }
+  ]
+}
